@@ -25,6 +25,7 @@
     },
     "plugins": [
       "expo-router",
+      ["@clerk/expo", { "appleSignIn": false }],
       [
         "expo-splash-screen",
         {

@@ -298,8 +298,28 @@
     @apply border-destructive;
   }
 
+  .auth-input-wrap {
+    @apply flex-row items-center rounded-2xl border border-border bg-background;
+  }
+
+  .auth-input-contained {
+    @apply min-w-0 flex-1 px-4 py-4 text-base font-sans-medium text-primary;
+  }
+
+  .auth-input-action {
+    @apply px-4 py-4;
+  }
+
+  .auth-input-action-text {
+    @apply text-sm font-sans-bold text-accent;
+  }
+
   .auth-error {
     @apply text-xs font-sans-medium text-destructive;
+  }
+
+  .auth-error-banner {
+    @apply rounded-2xl bg-destructive/10 px-4 py-3 text-sm font-sans-medium text-destructive;
   }
 
   .auth-helper {
@@ -312,6 +332,10 @@
 
   .auth-button-disabled {
     @apply bg-accent/45;
+  }
+
+  .auth-button-content {
+    @apply flex-row items-center gap-2;
   }
 
   .auth-button-text {
@@ -348,6 +372,10 @@
 
   .auth-link {
     @apply text-sm font-sans-bold text-accent;
+  }
+
+  .auth-resend-row {
+    @apply flex-row items-center justify-center gap-1;
   }
 
   .modal-overlay {
