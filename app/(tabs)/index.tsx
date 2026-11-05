@@ -66,7 +66,7 @@ export default function App() {
                 }
               ></FlatList>
             </View>
-            <ListHeading title="All Subscription"></ListHeading>
+            <ListHeading title="All Subscriptions"></ListHeading>
           </>
         )}
         data={HOME_SUBSCRIPTIONS}
