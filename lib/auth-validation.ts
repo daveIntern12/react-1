@@ -39,10 +39,7 @@ function readString(
   return typeof value === "string" && value.trim() ? value : undefined;
 }
 
-export function getClerkErrorMessage(
-  error: unknown,
-  fallback: string,
-): string {
+export function getClerkErrorMessage(error: unknown, fallback: string): string {
   if (!isRecord(error)) return fallback;
 
   const errors = error.errors;
