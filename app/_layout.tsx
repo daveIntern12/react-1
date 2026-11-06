@@ -1,9 +1,11 @@
-import { ClerkProvider } from "@clerk/expo";
+import { ClerkProvider, useUser } from "@clerk/expo";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { useEffect } from "react";
+import { PostHogProvider, usePostHog } from "posthog-react-native";
+import { useEffect, useRef } from "react";
 import { Text, View } from "react-native";
+import { posthog } from "../lib/posthog";
 import "../global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -18,6 +20,37 @@ const tokenCache = {
     return SecureStore.setItemAsync(key, token);
   },
 };
+
+function PostHogIdentity() {
+  const posthogClient = usePostHog();
+  const { isLoaded, isSignedIn, user } = useUser();
+  const identifiedUserId = useRef<string | null>(null);
+  const hasResolvedAuth = useRef(false);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    if (isSignedIn && user) {
+      if (identifiedUserId.current !== user.id) {
+        posthogClient.identify(user.id, {
+          $set: {
+            email: user.primaryEmailAddress?.emailAddress ?? null,
+            first_name: user.firstName,
+            last_name: user.lastName,
+          },
+        });
+        identifiedUserId.current = user.id;
+      }
+    } else if (!hasResolvedAuth.current || identifiedUserId.current) {
+      posthogClient.reset();
+      identifiedUserId.current = null;
+    }
+
+    hasResolvedAuth.current = true;
+  }, [isLoaded, isSignedIn, posthogClient, user]);
+
+  return null;
+}
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -53,7 +86,14 @@ export default function RootLayout() {
       publishableKey="pk_test_YWN0aXZlLWhvdW5kLTg3MjcuY2xlcmsuYWNjb3VudHMuZGV2JA"
       tokenCache={tokenCache}
     >
-      <Stack screenOptions={{ headerShown: false }} />
+      {posthog ? (
+        <PostHogProvider client={posthog}>
+          <PostHogIdentity />
+          <Stack screenOptions={{ headerShown: false }} />
+        </PostHogProvider>
+      ) : (
+        <Stack screenOptions={{ headerShown: false }} />
+      )}
     </ClerkProvider>
   );
 }

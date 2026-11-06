@@ -11,10 +11,12 @@ import UpcomingSubscriptionCard from "../../components/UpComingSubscriptionCard"
 import {
   HOME_BALANCE,
   HOME_SUBSCRIPTIONS,
+  HOME_USER,
   UPCOMING_SUBSCRIPTIONS,
 } from "../../constants/data";
 import { icons } from "../../constants/icons";
 import images from "../../constants/images";
+import { posthog } from "../../lib/posthog";
 import { formatCurrency } from "../../lib/utils";
 export const SafeAreaView = (
   props: React.ComponentProps<typeof RNSafeAreaView> & { className?: string },
@@ -32,7 +34,7 @@ export default function App() {
             <View className="home-header">
               <View className="home-user">
                 <Image source={images.avatar} className="home-avatar" />
-                <Text className="home-user-name"> hello</Text>
+                <Text className="home-user-name">{HOME_USER.name}</Text>
               </View>
               <Image source={icons.add} className="home-add-icon"></Image>
             </View>
@@ -74,11 +76,18 @@ export default function App() {
           <SubscriptionCard
             {...item}
             expanded={expandedSubscriptionId === item.id}
-            onPress={() =>
+            onPress={() => {
+              if (expandedSubscriptionId !== item.id) {
+                posthog?.capture("subscription_details_viewed", {
+                  billing_interval: item.billing ?? null,
+                  category: item.category ?? null,
+                  subscription_status: item.status ?? null,
+                });
+              }
               setExpandedSubscriptionId((currentId) =>
                 currentId === item.id ? null : item.id,
-              )
-            }
+              );
+            }}
           />
         )}
         extraData={expandedSubscriptionId}

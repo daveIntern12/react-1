@@ -5,6 +5,8 @@ import { ActivityIndicator, Image, KeyboardAvoidingView, Platform, Pressable, Sc
 import { useCssElement } from "react-native-css";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../constants/theme";
+import { posthog } from "../../lib/posthog";
+import { posthogLogger } from "../../lib/posthog-logger";
 
 export const SafeAreaView = (props: React.ComponentProps<typeof RNSafeAreaView> & { className?: string }) =>
   useCssElement(RNSafeAreaView, props, { className: "style" });
@@ -40,6 +42,8 @@ const Settings = () => {
     try {
       await user.update({ firstName: nextFirstName, lastName: nextLastName });
       await user.reload();
+      posthog?.capture("profile_updated");
+      posthogLogger.info("profile_update_completed");
       setMessage("Profile updated.");
     } catch {
       setMessage("We couldn't update your profile. Please try again.");
@@ -51,6 +55,7 @@ const Settings = () => {
   const handleSignOut = async () => {
     setIsSigningOut(true);
     try {
+      posthog?.capture("signed_out");
       await signOut();
       router.replace("/auth/sign-in");
     } finally {

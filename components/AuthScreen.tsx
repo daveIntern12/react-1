@@ -16,6 +16,8 @@ import {
 import { useCssElement } from "react-native-css";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../constants/theme";
+import { posthog } from "../lib/posthog";
+import { posthogLogger } from "../lib/posthog-logger";
 import {
   type AuthField,
   type AuthValidationErrors,
@@ -104,6 +106,10 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
 
         if (signUp.status === "complete") {
           await signUp.finalize({ navigate: navigateToApp });
+          posthog?.capture("account_created");
+          posthogLogger.info("account_creation_completed", {
+            auth_method: "password",
+          });
           return;
         }
 
@@ -146,6 +152,10 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
 
       if (signIn.status === "complete") {
         await signIn.finalize({ navigate: navigateToApp });
+        posthog?.capture("sign_in_completed", { auth_method: "password" });
+        posthogLogger.info("authentication_completed", {
+          auth_method: "password",
+        });
         return;
       }
 
@@ -200,6 +210,8 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
       }
       if (signIn.status === "complete") {
         await signIn.finalize({ navigate: navigateToApp });
+        posthog?.capture("sign_in_completed", { auth_method: "mfa" });
+        posthogLogger.info("authentication_completed", { auth_method: "mfa" });
         return;
       }
       setApiError(
@@ -243,6 +255,10 @@ export default function AuthScreen({ mode }: AuthScreenProps) {
 
       if (signUp.status === "complete") {
         await signUp.finalize({ navigate: navigateToApp });
+        posthog?.capture("account_created");
+        posthogLogger.info("account_creation_completed", {
+          auth_method: "email_verification",
+        });
         return;
       }
 
