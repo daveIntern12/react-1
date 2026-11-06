@@ -1,6 +1,6 @@
+import { useAuth } from "@clerk/expo";
 import clsx from "clsx";
 import { Redirect, Tabs } from "expo-router";
-import { useAuth } from "@clerk/expo";
 import { Image, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { tabs } from "../../constants/data";
@@ -19,7 +19,7 @@ const TabLayout = () => {
   const TabIcon = ({ focused, icon }: TabIconProps) => {
     return (
       <View className="tabs-icon">
-        <View className={clsx("tabspill", focused && "tabs-active")}>
+        <View className={clsx("tabs-pill", focused && "tabs-active")}>
           <Image source={icon} className="tabs-glyph" />
         </View>
       </View>
